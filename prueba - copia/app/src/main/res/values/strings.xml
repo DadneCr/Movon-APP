@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">prueba</string>
+    <string name="codigo" />
+    <string name="producto">producto</string>
+
+
+    <string name="Buscar">Buscar</string>
+
+    <string name="texto1">texto1</string>
+    <string name="codigoBarras">CodigoBarras</string>
+
+    <string name="Codigo">Codigo</string>
+    <string name="escanear">Escanear</string>
+</resources>
