@@ -11,4 +11,14 @@
 
     <string name="Codigo">Codigo</string>
     <string name="escanear">Escanear</string>
+    <string name="validar">validar</string>
+    <string name="escanear_gu_a">Escanear Guía</string>
+    <string name="validaci_n_de_registro">Validación de registro</string>
+    <string name="consultar">Consultar</string>
+    <string name="ingresa_los_items">Ingresa los items</string>
+    <string name="consultar_item_validados">Consultar item validados</string>
+    <string name="n_meros_de_serie_validados">Números de serie validados</string>
+    <string name="validaci_n_de_registros">VALIDACIÓN DE REGISTROS</string>
+    <string name="n_mero_de_gu_a">Número de Guía</string>
+    <string name="ingresar_item">Ingresar item</string>
 </resources>

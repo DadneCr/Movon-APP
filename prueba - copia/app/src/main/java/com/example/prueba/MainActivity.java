@@ -32,8 +32,9 @@ package com.example.prueba;
 public class MainActivity extends AppCompatActivity {
 
 
-    Button btnBuscar, btnScanner;
-    TextView  tvCodigo, tvIdRegistro, tvLote;
+    Button btnBuscar, btnScanner, btnValidar, btnValidados;
+    TextView  tvCodigo, tvLote, tvLoteValidado, tvRegistro;
+    EditText edtItem;
     RequestQueue requestQueue;
     private Object StringRequest;
     @Override
@@ -45,18 +46,41 @@ public class MainActivity extends AppCompatActivity {
         tvCodigo = findViewById(R.id.tvCodigoBarras);
         btnBuscar = findViewById(R.id.btnBuscar);
         btnBuscar = (Button) findViewById(R.id.btnBuscar);
-
         tvLote = findViewById(R.id.tvLote);
+        edtItem = findViewById(R.id.edItem);
+        btnValidar = (Button) findViewById(R.id.btnValidar);
+        tvLoteValidado= findViewById(R.id.tvLoteValido);
+        tvRegistro = findViewById(R.id.tvRegistro);
+
 
         btnScanner.setOnClickListener(mOnClickListener);
 
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buscarProducto("http://192.168.0.13/Movon-APP/buscarRegistro.php?guia="+tvCodigo.getText()+"");
+                buscarProducto("http://192.168.0.13/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
+
+                tvLoteValidado.setText(" ");
+                itemValidado("http://192.168.0.13/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");
             }
         });
 
+        btnValidar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validarLote("http://192.168.0.13/Movon-APP/validarLotes.php");
+                buscarProducto("http://192.168.0.13/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
+
+            }
+        });
+
+        /*btnValidados.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tvLoteValidado.setText(" ");
+                itemValidado("http://192.168.0.13/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");
+            }
+        });*/
     }
     @Override
 
@@ -88,34 +112,109 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(JSONArray response) {
                     JSONObject jsonObject = null;
-
                     for (int i = 0; i < response.length(); i++) {
                         try {
 
                             jsonObject = response.getJSONObject(i);
-                            tvLote.setText("Ingresa los "+jsonObject.getString("COUNT(*)")+" números de serie para validar\n");
+                            if(jsonObject.getString("COUNT(*)") !=  "0"){
 
+                                tvLote.setText("El registro contiene  " + jsonObject.getString("COUNT(*)") + " números de serie para validar\n");
+                                tvRegistro.setText("Registro " + edtItem.getText());
+
+                            }else {
+                                tvLote.setText("Lotes validados");
+
+                            }
 
                         } catch (JSONException e) {
-                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),"ERROR no existe", Toast.LENGTH_SHORT).show();
+
+                            tvRegistro.setText("No existe el registro: " + edtItem.getText());
+
                         }
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(getApplicationContext(),"ERROR DE CONEXIÓN", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"ERROR no existe", Toast.LENGTH_SHORT).show();
+                    tvRegistro.setText("No existe el registro: " + edtItem.getText());
                 }
             }
 
             );
             requestQueue = Volley.newRequestQueue(this);
             requestQueue.add(jsonArrayRequest);
+
         }
 
 
+    /* UPDATE A LA BD DE MYSQL**/
+    private void validarLote(String link){
+        StringRequest stringRequest;
 
+        StringRequest = stringRequest = new  StringRequest(Request.Method.POST, link, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
 
+                Toast.makeText(getApplicationContext(), "Operación exitosa", Toast.LENGTH_SHORT).show();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(),error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> parametros = new HashMap<String, String>();
+                parametros.put("guia", edtItem.getText().toString());
+                parametros.put("lotes", tvCodigo.getText().toString());
+
+                return parametros;
+            }
+        };
+
+        requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+        tvLoteValidado.setText(" ");
+        itemValidado("http://192.168.0.13/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");
+    }
+
+    private  void itemValidado (String link){
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(link, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                JSONObject jsonObject = null;
+
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+
+                        jsonObject = response.getJSONObject(i);
+
+                        tvLoteValidado.setText(tvLoteValidado.getText()+"\n"+jsonObject.getString("num_serie")+ "  ");
+                        //tvLoteValidado.setText(jsonObject.getString("num_serie"));
+
+                    } catch (JSONException e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(),"ERROR", Toast.LENGTH_SHORT).show();
+                tvRegistro.setText("No existe el registro: " + edtItem.getText());
+
+            }
+        }
+
+        );
+        requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonArrayRequest);
+    }
 
 
 }

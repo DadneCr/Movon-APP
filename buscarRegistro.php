@@ -5,7 +5,7 @@ $guia = $_GET["guia"];
 //$codigo= 123;
 try{
     $sql = "SELECT COUNT(*) FROM lotes INNER JOIN registros on registros.id_registro = lotes.id_registro
-    where registros.guia = '$guia' " ;
+    where registros.guia = '$guia' and  lotes.validado=0" ;
     $consulta = $conn->query($sql);
    
 }catch(Exception $e){
