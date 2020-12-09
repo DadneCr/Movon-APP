@@ -1,5 +1,6 @@
 package com.example.prueba;
 
+    import android.app.Dialog;
     import android.content.Intent;
     import android.os.Bundle;
     import android.util.Log;
@@ -74,12 +75,12 @@ public class RegistroValidacion extends AppCompatActivity {
         btnValidar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               validarLote("http://192.168.0.16/Movon-APP/validarLotes.php");
-               buscarProducto("http://192.168.0.16/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
+                validarLote("http://192.168.0.16/Movon-APP/validarLotes.php");
+                buscarProducto("http://192.168.0.16/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
                 validarIncorrecto("http://192.168.0.16/Movon-APP/comparacionLote.php?guia="+edtItem.getText()+"&lote="+edtCodigoBarras.getText()+"");
                 tvLoteValidado.setText(" ");
                 itemValidado("http://192.168.0.16/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");
-                registroValidado("http://192.168.0.16/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
+                //registroValidado("http://192.168.0.16/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
             }
         });
 
@@ -189,8 +190,7 @@ public class RegistroValidacion extends AppCompatActivity {
 
         requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
-
-
+        registroValidado("http://192.168.0.16/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
     }
 
     private  void itemValidado (String link){
@@ -276,15 +276,14 @@ public class RegistroValidacion extends AppCompatActivity {
                         if(validacion.equals("0")){
                             //Toast.makeText(getApplicationContext(),"error validar incorrecto", Toast.LENGTH_SHORT).show();
                         }else {
-                            tvLoteValidado.setText("");
-                            tvCodigo.setText("");
-                            tvLote.setText("");
-                            edtItem.setText("");
-                            tvNoResgistro.setText("");
-                            tvRegistro.setText("");
-                            Toast.makeText(getApplicationContext(),"Registro validado", Toast.LENGTH_SHORT).show();
-                            /*AlertDialog.Builder builder = new AlertDialog.Builder(RegistroValidacion.this);
-                            builder.setTitle("Registro validado");*/
+
+                            //Toast.makeText(getApplicationContext(),"Registro validado", Toast.LENGTH_SHORT).show();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(RegistroValidacion.this);
+                            builder.setTitle("Registro validado");
+                            builder.setMessage("El resgistro "+edtItem.getText()+" ha sido validado");
+                            builder.setNegativeButton(android.R.string.cancel, null);
+                            Dialog dialog = builder.create();
+                            dialog.show();
 
                         }
 
