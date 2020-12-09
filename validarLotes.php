@@ -4,11 +4,9 @@ if(isset($_POST)){
 
   include_once 'conexiones.php';
 
-  $guia = $conn->real_escape_string($_POST['guia']);
+  $guia = $conn->real_escape_string(strtoupper(trim($_POST['guia'])));
   $item = $_POST['lotes'];
   $lotes = explode(" ", $item);
-  echo $lotes;
-  echo $lotes[0];
   $validado = 1;
   $datos_incorrectos = 0;
   try{
@@ -45,7 +43,7 @@ if(isset($_POST)){
 
       if($consulta and $consulta->num_rows==1){
         // el lote está en la base de datos
-        $resultados['loteNum'.$i] = "Validado";
+        //$resultados['loteNum'.$i] = "Validado";
 
         try{
 
@@ -121,22 +119,24 @@ if(isset($_POST)){
 
 
       }else{
+        $sql2 = "SELECT COUNT(*) FROM lotes INNER JOIN
+        registros on lotes.id_registro = registros.id_registro
+        WHERE lotes.num_serie=TRIM('$num_serie') and lotes.id_registro=$id_registro and lotes.validado=0 LIMIT 1";
+        $consulta2 = $conn->query($sql2);
 
-        $resultados['loteNum'.$i] = "No validado";
+        while($row = $consulta_validacion->fetch_row()){
+        
+          $resultado[] = array_map('utf8_encode', $row);
+
+        
+        }
       }
 
     }
-
   
+ $conn->close();
 
-
-
-
-
-
-  $conn->close();
-
-  echo json_encode($resultados);
+  echo json_encode($resultado);
 
 
 

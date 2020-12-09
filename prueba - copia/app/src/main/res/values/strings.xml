@@ -21,4 +21,12 @@
     <string name="validaci_n_de_registros">VALIDACIÓN DE REGISTROS</string>
     <string name="n_mero_de_gu_a">Número de Guía</string>
     <string name="ingresar_item">Ingresar item</string>
+    <string name="codigo_de_barras">Codigo de Barras</string>
+    <string name="Ingresar">Ingresar</string>
+    <string name="todo">TODO</string>
+    <string name="contrase_a">Contraseña</string>
+    <string name="correo">Correo</string>
+    <string name="movon">MOVON</string>
+    <string name="tracking">TRACKING</string>
+    <string name="cerrar_sesi_n">Cerrar sesión</string>
 </resources>
