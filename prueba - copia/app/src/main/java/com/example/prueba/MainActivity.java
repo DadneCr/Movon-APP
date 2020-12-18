@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 /*Intent intent = new Intent (v.getContext(), RegistroValidacion.class);
                 startActivityForResult(intent, 0);*/
-                login("http://192.168.0.11/Movon-APP/login.php?correo="+edtCorreo.getText()+"&password="+edtPassword.getText()+"");
+                login("http://192.168.0.14/Movon-APP/login.php?correo="+edtCorreo.getText()+"&password="+edtPassword.getText()+"");
             }
         });
     }

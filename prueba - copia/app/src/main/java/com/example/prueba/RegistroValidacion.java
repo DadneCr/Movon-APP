@@ -54,7 +54,7 @@ public class RegistroValidacion extends AppCompatActivity {
         setContentView(R.layout.activity_resgistro);
 
         btnScanner = findViewById(R.id.btnEscanear);
-        edtCodigoBarras = findViewById(R.id.edtCodigoBarras);
+       // edtCodigoBarras = findViewById(R.id.edtCodigoBarras);
         btnBuscar = findViewById(R.id.btnBuscar);
         btnBuscar = (Button) findViewById(R.id.btnBuscar);
         tvLote = findViewById(R.id.tvLote);
@@ -73,13 +73,11 @@ public class RegistroValidacion extends AppCompatActivity {
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Intent intent = new Intent (v.getContext(), MainActivity.class);
-                startActivityForResult(intent, 0);*/
-
-                buscarProducto("http://192.168.0.11/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
+                buscarProducto("http://192.168.0.14/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
+                registroValidado("http://192.168.0.14/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
                 tvLoteValidado.setText(" ");
-                itemValidado("http://192.168.0.11/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");
-                registroValidado("http://192.168.0.11/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
+                itemValidado("http://192.168.0.14/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");
+                registroValidado("http://192.168.0.14/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
             }
         });
 
@@ -91,11 +89,14 @@ public class RegistroValidacion extends AppCompatActivity {
 
                 for (int i=0; i<cantidadItems; i++) {
                     tvLoteNoValido.setText("");
-                    //buscarProducto("http://192.168.100.153/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
-                    validarIncorrecto("http://192.168.0.11/Movon-APP/comparacionLote.php?guia="+edtItem.getText()+"&lote="+edtList.get(i).getText()+"", edtList.get(i).getText());
-                    registroValidado("http://192.168.0.11/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
-                    tvLoteValidado.setText(" ");
-                    itemValidado("http://192.168.0.11/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"&lote="+edtList.get(i).getText()+"");
+                    if (!edtList.get(i).getText().toString().isEmpty()) {
+                        //buscarProducto("http://192.168.100.153/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
+                        validarLote("http://192.168.0.14/Movon-APP/validarLotes.php", edtList.get(i).getText().toString());
+                        validarIncorrecto("http://192.168.0.14/Movon-APP/comparacionLote.php?guia=" + edtItem.getText() + "&lote=" + edtList.get(i).getText().toString() + "", edtList.get(i).getText().toString());
+                        registroValidado("http://192.168.0.14/Movon-APP/registrosValidados.php?guia=" + edtItem.getText() + "");
+                        tvLoteValidado.setText("");
+                        itemValidado("http://192.168.0.14/Movon-APP/consultarLotesValidados.php?guia=" + edtItem.getText() + "");
+                    }
                 }
 
 
@@ -180,14 +181,14 @@ public class RegistroValidacion extends AppCompatActivity {
                             }
 
                         } catch (JSONException e) {
-                            Toast.makeText(getApplicationContext(),"ERROR", Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(getApplicationContext(),"ERROR", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(getApplicationContext(),"ERROR NO EXISTE", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"ERROR NO EXISTE", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -199,7 +200,7 @@ public class RegistroValidacion extends AppCompatActivity {
 
 
     /* UPDATE A LA BD DE MYSQL**/
-    private void validarLote(String link){
+    private void validarLote(String link, String numero_serie){
         StringRequest stringRequest;
 
         StringRequest = stringRequest = new  StringRequest(Request.Method.POST, link, new Response.Listener<String>() {
@@ -212,21 +213,21 @@ public class RegistroValidacion extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(),error.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),error.toString(), Toast.LENGTH_SHORT).show();
             }
         }){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> parametros = new HashMap<String, String>();
                 parametros.put("guia", edtItem.getText().toString());
-                parametros.put("lotes", edtCodigoBarras.getText().toString());
+                parametros.put("lotes", numero_serie);
                 return parametros;
             }
         };
 
         requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
-        registroValidado("http://192.168.0.11/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
+        registroValidado("http://192.168.0.14/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
     }
 
     private  void itemValidado (String link){
@@ -263,7 +264,7 @@ public class RegistroValidacion extends AppCompatActivity {
 
     /**  MOSTAR ITEM INVALIDOS  **/
 
-    private  void validarIncorrecto (String link, Editable item){
+    private  void validarIncorrecto (String link, String item){
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(link, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -324,7 +325,7 @@ public class RegistroValidacion extends AppCompatActivity {
                         }
 
                     } catch (JSONException e) {
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
