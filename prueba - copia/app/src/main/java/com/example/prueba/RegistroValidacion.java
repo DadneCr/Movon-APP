@@ -3,10 +3,12 @@ package com.example.prueba;
     import android.app.Dialog;
     import android.content.Intent;
     import android.os.Bundle;
+    import android.text.Editable;
     import android.util.Log;
     import android.view.View;
     import android.widget.Button;
     import android.widget.EditText;
+    import android.widget.LinearLayout;
     import android.widget.TextView;
     import android.widget.Toast;
 
@@ -29,16 +31,22 @@ package com.example.prueba;
     import org.json.JSONException;
     import org.json.JSONObject;
 
+    import java.util.ArrayList;
     import java.util.HashMap;
+    import java.util.List;
     import java.util.Map;
 
 public class RegistroValidacion extends AppCompatActivity {
 
 
     Button btnBuscar, btnScanner, btnValidar, btnValidados, btnCerrar;
-    TextView  tvCodigo, tvLote, tvLoteValidado, tvRegistro, tvNoResgistro, tvLoteNoValido;
+    TextView  tvCodigo, tvLote, tvLoteValidado, tvRegistro, tvNoResgistro, tvLoteNoValido, item;
     EditText edtItem, edtCodigoBarras;
     RequestQueue requestQueue;
+    LinearLayout contenedor;
+    List<EditText> edtList = new ArrayList<EditText>();
+    int n;
+
     private Object StringRequest;
     @Override
     protected void onCreate(Bundle saveInstanceState) {
@@ -57,6 +65,7 @@ public class RegistroValidacion extends AppCompatActivity {
         tvNoResgistro = findViewById(R.id.tvNoResgistro);
         tvLoteNoValido = findViewById(R.id.tvLoteNoValido);
         btnCerrar = (Button) findViewById(R.id.btnCerrar);
+        contenedor = (LinearLayout) findViewById(R.id.idLayout);
 
 
         btnScanner.setOnClickListener(mOnClickListener);
@@ -66,20 +75,36 @@ public class RegistroValidacion extends AppCompatActivity {
             public void onClick(View v) {
                 /*Intent intent = new Intent (v.getContext(), MainActivity.class);
                 startActivityForResult(intent, 0);*/
-                buscarProducto("http://192.168.0.16/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
+
+                buscarProducto("http://192.168.0.11/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
                 tvLoteValidado.setText(" ");
-                itemValidado("http://192.168.0.16/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");
+                itemValidado("http://192.168.0.11/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");
+                registroValidado("http://192.168.0.11/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
             }
         });
 
         btnValidar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validarLote("http://192.168.0.16/Movon-APP/validarLotes.php");
+
+                int  cantidadItems = edtList.size();
+
+                for (int i=0; i<cantidadItems; i++) {
+                    tvLoteNoValido.setText("");
+                    //buscarProducto("http://192.168.100.153/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
+                    validarIncorrecto("http://192.168.0.11/Movon-APP/comparacionLote.php?guia="+edtItem.getText()+"&lote="+edtList.get(i).getText()+"", edtList.get(i).getText());
+                    registroValidado("http://192.168.0.11/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
+                    tvLoteValidado.setText(" ");
+                    itemValidado("http://192.168.0.11/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"&lote="+edtList.get(i).getText()+"");
+                }
+
+
+                /*validarLote("http://192.168.0.16/Movon-APP/validarLotes.php");
                 buscarProducto("http://192.168.0.16/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
                 validarIncorrecto("http://192.168.0.16/Movon-APP/comparacionLote.php?guia="+edtItem.getText()+"&lote="+edtCodigoBarras.getText()+"");
                 tvLoteValidado.setText(" ");
-                itemValidado("http://192.168.0.16/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");
+                itemValidado("http://192.168.0.16/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");*/
+
                 //registroValidado("http://192.168.0.16/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
             }
         });
@@ -101,9 +126,17 @@ public class RegistroValidacion extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data );
         if (result.getContents() != null){
-            edtCodigoBarras.setText(result.getContents());
+            int  cantidadItems = edtList.size();
+            for (int i=0; i<cantidadItems; i++) {
+                if(edtList.get(i).getText().toString().isEmpty()) {
+                    //edtCodigoBarras.setText(result.getContents());
+                    edtList.get(i).setText(result.getContents());
+                    break;
+                }
+            }
         }else {
-            edtCodigoBarras.setText("Error al escanear codigo");
+
+            Toast.makeText(getApplicationContext(),"Error al escanear codigo", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -140,7 +173,10 @@ public class RegistroValidacion extends AppCompatActivity {
                                 tvNoResgistro.setText("");
                                 tvLote.setText("El registro contiene " + jsonObject.getString("COUNT(*)") + " números de serie para validar\n");
                                 tvRegistro.setText("Registro " + edtItem.getText());
-                                //Log.d("MyApp",validacion);
+                                n = jsonObject.getInt("COUNT(*)");
+                                borarEdt();
+                                edtDinamico(n);
+
                             }
 
                         } catch (JSONException e) {
@@ -190,7 +226,7 @@ public class RegistroValidacion extends AppCompatActivity {
 
         requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
-        registroValidado("http://192.168.0.16/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
+        registroValidado("http://192.168.0.11/Movon-APP/registrosValidados.php?guia="+edtItem.getText()+"");
     }
 
     private  void itemValidado (String link){
@@ -216,7 +252,7 @@ public class RegistroValidacion extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(),"ERROR", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(),"ERROR", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -227,7 +263,7 @@ public class RegistroValidacion extends AppCompatActivity {
 
     /**  MOSTAR ITEM INVALIDOS  **/
 
-    private  void validarIncorrecto (String link){
+    private  void validarIncorrecto (String link, Editable item){
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(link, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -239,9 +275,9 @@ public class RegistroValidacion extends AppCompatActivity {
                         jsonObject = response.getJSONObject(i);
                         String validacion = jsonObject.getString("COUNT(*)");
                         if(validacion.equals("0")){
-                            tvLoteNoValido.setText("El número de serie "+edtCodigoBarras.getText()+" es incorrecto");
+                            String resultado = tvLoteNoValido.getText().toString();
+                            tvLoteNoValido.setText(resultado+" " +item+" es incorrecto");
                         }else {
-                            tvLoteNoValido.setText("");
 
                         }
 
@@ -303,4 +339,32 @@ public class RegistroValidacion extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(jsonArrayRequest);
     }
+
+
+    private void edtDinamico(int n){
+
+        final EditText[] editTexts = new  EditText[n];
+        for (int i = 1; i <= n; i++) {
+            // create a new textview
+            EditText editText = new EditText(this);
+            editText.setId(i);
+            editText.setHint("Item "+i);
+
+            edtList.add(editText);
+            contenedor.addView(editText);
+        }
+
+    }
+
+    private  void borarEdt( ){
+        //Log.d("MyApp", String.valueOf(edtList.size()));
+        int tamaño= edtList.size();
+        for (int i=0; i<tamaño; i++){
+            //Remove 2nd(index:1) TextView from the parent LinearLayout
+            Log.d("MyApp", "Entra al for"+i);
+             contenedor.removeView(edtList.get(i));
+
+        }
+    }
+
 }

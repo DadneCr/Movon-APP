@@ -124,7 +124,7 @@ if(isset($_POST)){
         WHERE lotes.num_serie=TRIM('$num_serie') and lotes.id_registro=$id_registro and lotes.validado=0 LIMIT 1";
         $consulta2 = $conn->query($sql2);
 
-        while($row = $consulta_validacion->fetch_row()){
+        while($row = $consulta2->fetch_row()){
         
           $resultado[] = array_map('utf8_encode', $row);
 
