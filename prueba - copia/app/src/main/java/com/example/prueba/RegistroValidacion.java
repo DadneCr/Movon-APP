@@ -1,40 +1,40 @@
 package com.example.prueba;
 
-    import android.app.Dialog;
-    import android.content.Intent;
-    import android.os.Bundle;
-    import android.text.Editable;
-    import android.util.Log;
-    import android.view.View;
-    import android.widget.Button;
-    import android.widget.EditText;
-    import android.widget.LinearLayout;
-    import android.widget.TextView;
-    import android.widget.Toast;
+import android.app.Dialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Editable;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
-    import androidx.annotation.Nullable;
-    import androidx.appcompat.app.AlertDialog;
-    import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
-    import com.android.volley.AuthFailureError;
-    import com.android.volley.Request;
-    import com.android.volley.RequestQueue;
-    import com.android.volley.Response;
-    import com.android.volley.VolleyError;
-    import com.android.volley.toolbox.JsonArrayRequest;
-    import com.android.volley.toolbox.StringRequest;
-    import com.android.volley.toolbox.Volley;
-    import com.google.zxing.integration.android.IntentIntegrator;
-    import com.google.zxing.integration.android.IntentResult;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
-    import org.json.JSONArray;
-    import org.json.JSONException;
-    import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-    import java.util.ArrayList;
-    import java.util.HashMap;
-    import java.util.List;
-    import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RegistroValidacion extends AppCompatActivity {
 
@@ -45,6 +45,7 @@ public class RegistroValidacion extends AppCompatActivity {
     RequestQueue requestQueue;
     LinearLayout contenedor;
     List<EditText> edtList = new ArrayList<EditText>();
+    int  cantidadItems;
     int n;
 
     private Object StringRequest;
@@ -54,7 +55,7 @@ public class RegistroValidacion extends AppCompatActivity {
         setContentView(R.layout.activity_resgistro);
 
         btnScanner = findViewById(R.id.btnEscanear);
-       // edtCodigoBarras = findViewById(R.id.edtCodigoBarras);
+        // edtCodigoBarras = findViewById(R.id.edtCodigoBarras);
         btnBuscar = findViewById(R.id.btnBuscar);
         btnBuscar = (Button) findViewById(R.id.btnBuscar);
         tvLote = findViewById(R.id.tvLote);
@@ -82,20 +83,21 @@ public class RegistroValidacion extends AppCompatActivity {
         btnValidar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int  cantidadLotes = edtList.size();
 
-                int  cantidadItems = edtList.size();
+                for (int i=0; i<cantidadLotes; i++) {
 
-                for (int i=0; i<cantidadItems; i++) {
-                    Log.d("MyApp","item"+i);
                     if (!edtList.get(i).getText().toString().isEmpty()) {
-                        Log.d("MyApp",edtList.get(i).getText().toString());
                         validarIncorrecto("http://192.168.0.12/Movon-APP/comparacionLote.php?guia=" + edtItem.getText() + "&lote=" + edtList.get(i).getText().toString() + "", edtList.get(i).getText().toString());
                         validarLote("http://192.168.0.12/Movon-APP/validarLotes.php", edtList.get(i).getText().toString());
-
+                        buscarProducto("http://192.168.0.12/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
+                        itemValidado("http://192.168.0.12/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");
+                        registroValidado("http://192.168.0.12/Movon-APP/registrosValidados.php?guia=" + edtItem.getText() + "");
                     }
-                    buscarProducto("http://192.168.0.12/Movon-APP/buscarRegistro.php?guia="+edtItem.getText()+"");
-                    itemValidado("http://192.168.0.12/Movon-APP/consultarLotesValidados.php?guia="+edtItem.getText()+"");
-                    registroValidado("http://192.168.0.12/Movon-APP/registrosValidados.php?guia=" + edtItem.getText() + "");
+                    if(i == (cantidadLotes-1)){
+                        btnBuscar.callOnClick();
+                    }
+                    btnBuscar.callOnClick();
                 }
 
             }
@@ -145,54 +147,57 @@ public class RegistroValidacion extends AppCompatActivity {
 
     /* SELECT DE REGISTROS BD **/
 
-        private  void buscarProducto (String link){
-            JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(link, new Response.Listener<JSONArray>() {
-                @Override
-                public void onResponse(JSONArray response) {
-                    JSONObject jsonObject = null;
-                    for (int i = 0; i < response.length(); i++) {
-                        try {
+    private  void buscarProducto (String link){
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(link, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                JSONObject jsonObject = null;
+                for (int i = 0; i < response.length(); i++) {
+                    try {
 
-                            jsonObject = response.getJSONObject(i);
-                            ///VALIDAR NÚERO DE GUIA
-                                String validacion = jsonObject.getString("COUNT(*)");
-                            if(validacion.equals("0")){
-                                tvNoResgistro.setText("No existe el registro o ya fue validado " + edtItem.getText());
-                                tvRegistro.setText("");
-                                tvLote.setText("");
-                                //Log.d("MyApp","Entra al if");
-                                n = 0;
-                                borarEdt();
-                                edtDinamico(n);
+                        jsonObject = response.getJSONObject(i);
+                        ///VALIDAR NÚERO DE GUIA
+                        String validacion = jsonObject.getString("COUNT(*)");
+                        if(validacion.equals("0")){
+                            borarEdt();
+                            tvNoResgistro.setText("No existe el registro o ya fue validado " + edtItem.getText());
+                            tvRegistro.setText("");
+                            tvLote.setText("");
+                            //Log.d("MyApp","Entra al if");
+                            n = 0;
+                            edtDinamico(n);
+                            registroValidado("http://192.168.0.12/Movon-APP/registrosValidados.php?guia=" + edtItem.getText() + "");
 
-                            }else {
-                                tvNoResgistro.setText("");
-                                tvLote.setText("El registro contiene " + jsonObject.getString("COUNT(*)") + " números de serie para validar\n");
-                                tvRegistro.setText("Registro " + edtItem.getText());
-                                n = jsonObject.getInt("COUNT(*)");
-                                borarEdt();
-                                edtDinamico(n);
 
-                            }
+                        }else {
+                            tvNoResgistro.setText("");
+                            tvLote.setText("El registro contiene " + jsonObject.getString("COUNT(*)") + " números de serie para validar\n");
+                            tvRegistro.setText("Registro " + edtItem.getText());
+                            n = jsonObject.getInt("COUNT(*)");
+                            Log.d("buscarguia","n vale:"+n);
+                            borarEdt();
+                            edtDinamico(n);
 
-                        } catch (JSONException e) {
-                           // Toast.makeText(getApplicationContext(),"ERROR", Toast.LENGTH_SHORT).show();
                         }
+
+                    } catch (JSONException e) {
+                        // Toast.makeText(getApplicationContext(),"ERROR", Toast.LENGTH_SHORT).show();
                     }
                 }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    //Toast.makeText(getApplicationContext(),"ERROR NO EXISTE", Toast.LENGTH_SHORT).show();
-                }
             }
-
-            );
-            requestQueue = Volley.newRequestQueue(this);
-            requestQueue.add(jsonArrayRequest);
-            tvLoteValidado.setText(" ");
-
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Toast.makeText(getApplicationContext(),"ERROR NO EXISTE", Toast.LENGTH_SHORT).show();
+            }
         }
+
+        );
+        requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonArrayRequest);
+        tvLoteValidado.setText(" ");
+
+    }
 
 
     /* UPDATE A LA BD DE MYSQL**/
@@ -250,7 +255,7 @@ public class RegistroValidacion extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-               // Toast.makeText(getApplicationContext(),"ERROR", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getApplicationContext(),"ERROR", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -314,7 +319,7 @@ public class RegistroValidacion extends AppCompatActivity {
                             //Toast.makeText(getApplicationContext(),"Registro validado", Toast.LENGTH_SHORT).show();
                             AlertDialog.Builder builder = new AlertDialog.Builder(RegistroValidacion.this);
                             builder.setTitle("Registro validado");
-                            builder.setMessage("El resgistro "+edtItem.getText()+" ha sido validado");
+                            builder.setMessage("El registro "+edtItem.getText()+" ha sido validado");
                             builder.setNegativeButton(android.R.string.cancel, null);
                             Dialog dialog = builder.create();
                             dialog.show();
@@ -334,7 +339,7 @@ public class RegistroValidacion extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-               // Toast.makeText(getApplicationContext(),"error validar incorrecto", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getApplicationContext(),"error validar incorrecto", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -357,6 +362,7 @@ public class RegistroValidacion extends AppCompatActivity {
             edtList.add(editText);
             contenedor.addView(editText);
         }
+        cantidadItems = edtList.size();
 
     }
 
@@ -365,12 +371,58 @@ public class RegistroValidacion extends AppCompatActivity {
         int tamaño= edtList.size();
         for (int i=0; i<tamaño; i++){
             //Remove 2nd(index:1) TextView from the parent LinearLayout
-            Log.d("MyApp", "Entra al for"+i);
-             contenedor.removeView(edtList.get(i));
+            //Log.d("MyApp", "Entra al for"+i);
+            contenedor.removeView(edtList.get(i));
 
         }
     }
-    private  void eliminarItem(int i ){
-       contenedor.removeView(edtList.get(i));
+
+    private  void consultarRegistro(String link){
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(link, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                JSONObject jsonObject = null;
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+
+                        jsonObject = response.getJSONObject(i);
+                        ///VALIDAR NÚERO DE GUIA
+                        String validacion = jsonObject.getString("COUNT(*)");
+                        if(validacion.equals("0")){
+                            tvNoResgistro.setText("No existe el registro o ya fue validado " + edtItem.getText());
+                            tvRegistro.setText("");
+                            tvLote.setText("");
+                            //Log.d("MyApp","Entra al if");
+                            n = 0;
+                            borarEdt();
+                            edtDinamico(n);
+
+                        }else {
+                            tvNoResgistro.setText("");
+                            tvLote.setText("El registro contiene " + jsonObject.getString("COUNT(*)") + " números de serie para validar\n");
+                            tvRegistro.setText("Registro " + edtItem.getText());
+                            n = jsonObject.getInt("COUNT(*)");
+
+
+                        }
+
+                    } catch (JSONException e) {
+                        // Toast.makeText(getApplicationContext(),"ERROR", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Toast.makeText(getApplicationContext(),"ERROR NO EXISTE", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        );
+        requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonArrayRequest);
+        tvLoteValidado.setText(" ");
+
     }
+
 }

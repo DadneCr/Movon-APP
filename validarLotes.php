@@ -136,7 +136,7 @@ if(isset($_POST)){
   
  $conn->close();
 
-  echo json_encode($resultado);
+  //echo json_encode($resultado);
 
 
 
