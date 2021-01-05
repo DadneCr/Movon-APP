@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MovonApp</string>
+    <string name="button">Button</string>
+    <string name="consultar">Consultar</string>
+    <string name="guia">Guia</string>
+    <string name="validaci_n_de_registro">Validación de Registro</string>
+    <string name="escanear">Escanear</string>
+</resources>
