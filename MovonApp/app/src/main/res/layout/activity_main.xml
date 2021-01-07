@@ -70,7 +70,7 @@
             android:layout_width="159dp"
             android:layout_height="189dp" android:id="@+id/tvLoteValidado"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="16dp" android:layout_marginLeft="79dp" android:layout_marginStart="79dp"
+            android:layout_marginBottom="16dp" android:layout_marginLeft="76dp" android:layout_marginStart="76dp"
             app:layout_constraintStart_toEndOf="@+id/layoutItems"/>
     <TextView
             android:layout_width="157dp"

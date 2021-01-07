@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     ResultSet rs;
     PreparedStatement pst;
     RequestQueue requestQueue;
-    int cantidadItem, id_registro, edtItem;
+    int cantidadItem, id_registro;
     private Object StringRequest;
 
     @Override
@@ -76,13 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 Thread validar = validarLote(id_registro);
                 validar.start();
                 validar = null;
-                guia = String.valueOf(edtGuia.getText()).toUpperCase().trim();
-                System.out.println(guia);
-                Thread construir = consultarRegistro(guia);
-                construir.start();
-                construir = null;
-                borarEdt();
-                edtDinamico(cantidadItem);
+
 
             }
         });
@@ -127,6 +121,8 @@ public class MainActivity extends AppCompatActivity {
         Thread sqlThread = new Thread() {
             public void run() {
                 try {
+                    tvLoteValidado.setText(" ");
+                    tvLote.setText(" ");
                     Connection conn = null;
                     conn =getConnection();
                     String stsql = "SELECT id_registro, id_status FROM registros WHERE guia = '"+guia+"' ";
@@ -152,6 +148,13 @@ public class MainActivity extends AppCompatActivity {
 
                         tvLote.setText("El registro contiene " +cantidadItem+ " números de serie para validar\n");
                         System.out.println("cantidad item "+cantidadItem);
+                            String sql6 = "SELECT  num_serie FROM lotes WHERE id_registro ="+id_registro+" and  lotes.validado=1";
+                            st = conn.createStatement();
+                            rs = st.executeQuery(sql6);
+                            tvLoteValidado.setText("ITEMS VALIDADOS\n");
+                            while (rs.next()) {
+                                tvLoteValidado.setText(tvLoteValidado.getText()+" "+rs.getString(1));
+                            }
                         }else{
 
                             MainActivity.this.runOnUiThread(new Runnable() {
@@ -194,9 +197,10 @@ public class MainActivity extends AppCompatActivity {
         Thread threadLote = new Thread() {
             public void run() {
                 String numero_serie;
-                edtItem = cantidadItem;
+
                 for (int i = 0; i<edtList.size(); i++ ) {
                     numero_serie = edtList.get(i).getText().toString().toUpperCase().trim();
+
                     if(!edtList.get(i).getText().toString().isEmpty()) {
 
                         try {
@@ -214,8 +218,6 @@ public class MainActivity extends AppCompatActivity {
                                 int rupdate = pst.executeUpdate();
                                 if(rupdate > 0){
 
-                                    edtItem -=1;
-                                    tvLoteValidado.setText(tvLoteValidado.getText() +""+numero_serie);
                                     String sql1 = "SELECT COUNT(*) FROM lotes WHERE id_registro=" + id_registro + " and datos=1 and validado=0";
                                     st = conn.createStatement();
                                     rs = st.executeQuery(sql1);
@@ -246,37 +248,17 @@ public class MainActivity extends AppCompatActivity {
 
 
                 }
-                /*MainActivity.this.runOnUiThread(new Runnable() {
+                MainActivity.this.runOnUiThread(new Runnable() {
 
                     public void run(){
-                        try {
-                            Connection conn = null;
-                            conn =getConnection();
-                            String sql5 = "SELECT COUNT(*) FROM lotes INNER JOIN registros on registros.id_registro = lotes.id_registro WHERE registros.guia = '"+guia+"' and  lotes.validado=0";
-                            st = conn.createStatement();
-                            rs = st.executeQuery(sql5);
-                            rs.next();
-
-                            cantidadItem = rs.getInt(1);
-                            borarEdt();
-                            edtDinamico(cantidadItem);
-                        } catch (SQLException throwables) {
-                            throwables.printStackTrace();
-                        }
-
-
-
+                        Thread construir = consultarRegistro(guia);
+                        construir.start();
+                        construir = null;
                     }
 
-                });*/
-
-
+                });
             }
         };
-
-
-
-
         return threadLote;
     }
     private void enviarCorreo(String link, final String guia, final int registro){
