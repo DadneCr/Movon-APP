@@ -5,4 +5,5 @@
     <string name="guia">Guia</string>
     <string name="validaci_n_de_registro">Validación de Registro</string>
     <string name="escanear">Escanear</string>
+    <string name="validar">Validar</string>
 </resources>

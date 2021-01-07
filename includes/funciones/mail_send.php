@@ -32,7 +32,7 @@ include 'SMTP.php';
         // Content
         $mail->isHTML(true);                                  // Set email format to HTML
         $mail->Subject = $title_text;
-        ///$mail->AddEmbeddedImage("../../imagenes/logo_principal_mejorado.png", "mi-fondo", "Movon Tracking"); //meter imagen de header
+        $mail->AddEmbeddedImage("imagenes/logo_principal_mejorado.png", "mi-fondo", "Movon Tracking"); //meter imagen de header
         $mail->Body    = $main_text;
 
         if($imagenes!=0){

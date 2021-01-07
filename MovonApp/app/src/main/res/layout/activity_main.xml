@@ -53,16 +53,30 @@
             android:layout_marginLeft="12dp" android:layout_marginStart="12dp">
     </LinearLayout>
     <Button
-            android:layout_width="76dp"
-            android:layout_height="36dp" android:id="@+id/btnEdt"
-            app:layout_constraintStart_toEndOf="@+id/btnConsultar" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="520dp"/>
-    <Button
             android:text="@string/escanear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/btnEscanear"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="356dp" android:layout_marginLeft="140dp" android:layout_marginStart="140dp"
+            android:layout_marginBottom="360dp" android:layout_marginLeft="104dp" android:layout_marginStart="104dp"
             app:layout_constraintStart_toEndOf="@+id/layoutItems"/>
+    <Button
+            android:text="@string/validar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/btnValidar"
+            android:layout_marginLeft="104dp" android:layout_marginStart="104dp"
+            app:layout_constraintStart_toEndOf="@+id/layoutItems" app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="292dp"/>
+    <TextView
+            android:layout_width="159dp"
+            android:layout_height="189dp" android:id="@+id/tvLoteValidado"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="16dp" android:layout_marginLeft="79dp" android:layout_marginStart="79dp"
+            app:layout_constraintStart_toEndOf="@+id/layoutItems"/>
+    <TextView
+            android:layout_width="157dp"
+            android:layout_height="58dp" android:id="@+id/tvErrorLote"
+            android:layout_marginLeft="77dp" android:layout_marginStart="77dp"
+            app:layout_constraintStart_toEndOf="@+id/layoutItems" android:layout_marginBottom="13dp"
+            app:layout_constraintBottom_toTopOf="@+id/tvLoteValidado"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
