@@ -7,6 +7,17 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
     <Button
+            android:id="@+id/btnCerrar"
+            android:layout_width="176dp"
+            android:layout_height="41dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/salir"
+            android:textSize="12sp"
+            app:backgroundTint="#EC1B45"
+            app:layout_constraintBottom_toTopOf="@+id/textView6"
+            tools:ignore="UnknownId" android:textColor="#FFFFFF" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="4dp" android:layout_marginStart="4dp"/>
+    <Button
             android:text="@string/consultar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/btnConsultar"
@@ -46,8 +57,8 @@
             android:layout_marginBottom="420dp"/>
     <LinearLayout
             android:orientation="vertical"
-            android:layout_width="90dp"
-            android:layout_height="393dp"
+            android:layout_width="103dp"
+            android:layout_height="385dp"
             android:id="@+id/layoutItems" app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="24dp" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="12dp" android:layout_marginStart="12dp">
@@ -57,26 +68,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/btnEscanear"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="360dp" android:layout_marginLeft="104dp" android:layout_marginStart="104dp"
-            app:layout_constraintStart_toEndOf="@+id/layoutItems"/>
+            android:layout_marginBottom="352dp" android:layout_marginLeft="148dp" android:layout_marginStart="148dp"
+            app:layout_constraintStart_toEndOf="@+id/layoutItems" android:background="#22F62C"
+            android:textColor="#FFFFFF"/>
     <Button
             android:text="@string/validar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/btnValidar"
-            android:layout_marginLeft="104dp" android:layout_marginStart="104dp"
+            android:layout_marginLeft="148dp" android:layout_marginStart="148dp"
             app:layout_constraintStart_toEndOf="@+id/layoutItems" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="292dp"/>
+            android:layout_marginBottom="280dp" android:background="#22F62C" android:textColor="#FFFFFF"/>
     <TextView
             android:layout_width="159dp"
             android:layout_height="189dp" android:id="@+id/tvLoteValidado"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="16dp" android:layout_marginLeft="76dp" android:layout_marginStart="76dp"
+            android:layout_marginBottom="60dp" android:layout_marginLeft="112dp" android:layout_marginStart="112dp"
             app:layout_constraintStart_toEndOf="@+id/layoutItems"/>
     <TextView
-            android:layout_width="157dp"
-            android:layout_height="58dp" android:id="@+id/tvErrorLote"
-            android:layout_marginLeft="77dp" android:layout_marginStart="77dp"
-            app:layout_constraintStart_toEndOf="@+id/layoutItems" android:layout_marginBottom="13dp"
-            app:layout_constraintBottom_toTopOf="@+id/tvLoteValidado"/>
+            android:layout_width="106dp"
+            android:layout_height="391dp" android:id="@+id/tvErrorLote"
+            android:textColor="#F60404"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="12dp"
+            android:layout_marginLeft="4dp" android:layout_marginStart="4dp"
+            app:layout_constraintStart_toEndOf="@+id/layoutItems"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

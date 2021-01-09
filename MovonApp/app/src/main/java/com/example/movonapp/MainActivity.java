@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    Button btnConsultar, btnEdt, btnScanner, btnValidar;
+    Button btnConsultar, btnCerrar, btnScanner, btnValidar;
     EditText edtGuia;
     TextView tvNoRegistro, tvLote, tvLoteValidado, tvErrorLote;
     LinearLayout layoutItems;
@@ -53,12 +53,22 @@ public class MainActivity extends AppCompatActivity {
         btnValidar = findViewById(R.id.btnValidar);
         tvLoteValidado = findViewById(R.id.tvLoteValidado);
         tvErrorLote = findViewById(R.id.tvErrorLote);
+        btnCerrar = (Button) findViewById(R.id.btnCerrar);
 
+
+        btnCerrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent (getApplicationContext(), login.class);
+                startActivityForResult(intent, 0);
+            }
+        });
         btnConsultar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tvNoRegistro.setText(" ");
                 if(!edtGuia.getText().toString().isEmpty()) {
-
+                    Toast.makeText(getApplicationContext(),"Buscando registro", Toast.LENGTH_SHORT).show();
                     guia = String.valueOf(edtGuia.getText()).toUpperCase().trim();
                     System.out.println(guia);
                     Thread construir = consultarRegistro(guia);
@@ -72,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         btnValidar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Toast.makeText(getApplicationContext(),"Validando espere un momento", Toast.LENGTH_SHORT).show();
                 Thread validar = validarLote(id_registro);
                 validar.start();
                 validar = null;
@@ -123,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     tvLoteValidado.setText(" ");
                     tvLote.setText(" ");
+
+
                     Connection conn = null;
                     conn =getConnection();
                     String stsql = "SELECT id_registro, id_status FROM registros WHERE guia = '"+guia+"' ";
@@ -166,6 +178,8 @@ public class MainActivity extends AppCompatActivity {
                                     builder.setNegativeButton(android.R.string.cancel, null);
                                     Dialog dialog = builder.create();
                                     dialog.show();
+                                    borarEdt();
+                                    tvErrorLote.setText(" ");
                                 }
 
                             });
@@ -176,6 +190,17 @@ public class MainActivity extends AppCompatActivity {
                         tvLote.setText("");
                         cantidadItem = 0;
 
+                        MainActivity.this.runOnUiThread(new Runnable() {
+
+                            public void run(){
+
+                                borarEdt();
+
+                            }
+
+                        });
+                        tvErrorLote.setText(" ");
+                        tvLoteValidado.setText(" ");
                     }
 
 
@@ -197,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
         Thread threadLote = new Thread() {
             public void run() {
                 String numero_serie;
+
 
                 for (int i = 0; i<edtList.size(); i++ ) {
                     numero_serie = edtList.get(i).getText().toString().toUpperCase().trim();
@@ -235,8 +261,9 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
                             } else {
+                                //tvErrorLote.setText("Número de serie incorrecto:");
                                 System.out.println("no se encuentra");
-                                tvErrorLote.setText(tvErrorLote.getText() +" "+numero_serie+" es incorrecto");
+                                tvErrorLote.setText(tvErrorLote.getText() +"\n"+numero_serie+" es incorrecto");
                             }
 
 
@@ -327,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://192.168.0.8:3306/movon_tracking", "dadne", "soporte");
+            conn = DriverManager.getConnection("jdbc:mysql://www.movon.com.mx:3306/movoncom_tracking_test", "movoncom_admin_tracking", "]c$+L*T%C4u6");
 
 
         }catch (Exception e) {
