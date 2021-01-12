@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Looper;
 import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import androidx.annotation.Nullable;
@@ -38,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
     PreparedStatement pst;
     RequestQueue requestQueue;
     int cantidadItem, id_registro;
+    AlertDialog.Builder alertDialogBuilder;
+    AlertDialog alertDialog;
     private Object StringRequest;
+    String itemsValidados;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 tvNoRegistro.setText(" ");
+                tvLoteValidado.setText(" ");
+                tvLote.setText(" ");
+
                 if(!edtGuia.getText().toString().isEmpty()) {
                     Toast.makeText(getApplicationContext(),"Buscando registro", Toast.LENGTH_SHORT).show();
                     guia = String.valueOf(edtGuia.getText()).toUpperCase().trim();
@@ -82,7 +89,11 @@ public class MainActivity extends AppCompatActivity {
         btnValidar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"Validando espere un momento", Toast.LENGTH_SHORT).show();
+                tvLoteValidado.setText(" ");
+                tvLoteValidado.setText(" ");
+                tvErrorLote.setText(" ");
+
+                //Toast.makeText(getApplicationContext(),"Validando espere un momento", Toast.LENGTH_SHORT).show();
                 Thread validar = validarLote(id_registro);
                 validar.start();
                 validar = null;
@@ -131,20 +142,19 @@ public class MainActivity extends AppCompatActivity {
         Thread sqlThread = new Thread() {
             public void run() {
                 try {
-                    tvLoteValidado.setText(" ");
-                    tvLote.setText(" ");
 
 
                     Connection conn = null;
                     conn =getConnection();
-                    String stsql = "SELECT id_registro, id_status FROM registros WHERE guia = '"+guia+"' ";
+                    String stsql = "SELECT id_registro, id_status FROM registros WHERE guia = '"+guia+"' LIMIT 1";
                     st = conn.createStatement();
                     rs = st.executeQuery(stsql);
+
                     if(rs.next()){
                         if(rs.getInt(2) != 1){
                         System.out.println(rs.getString(1));
                         id_registro = rs.getInt(1);
-                        String sql1 = "SELECT COUNT(*) FROM lotes INNER JOIN registros on registros.id_registro = lotes.id_registro WHERE registros.guia = '"+guia+"' and  lotes.validado=0";
+                        String sql1 = "SELECT COUNT(*) FROM lotes INNER JOIN registros on registros.id_registro = lotes.id_registro WHERE registros.guia = '"+guia+"' and  lotes.validado=0 LIMIT 1";
                         st = conn.createStatement();
                         rs = st.executeQuery(sql1);
                         rs.next();
@@ -154,19 +164,32 @@ public class MainActivity extends AppCompatActivity {
                                 public void run(){
                                     borarEdt();
                                     edtDinamico(cantidadItem);
+                                    tvLote.setText("El registro contiene " +cantidadItem+ " números de serie para validar\n");
                                 }
 
                             });
 
-                        tvLote.setText("El registro contiene " +cantidadItem+ " números de serie para validar\n");
+
                         System.out.println("cantidad item "+cantidadItem);
                             String sql6 = "SELECT  num_serie FROM lotes WHERE id_registro ="+id_registro+" and  lotes.validado=1";
                             st = conn.createStatement();
                             rs = st.executeQuery(sql6);
-                            tvLoteValidado.setText("ITEMS VALIDADOS\n");
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                public void run(){
+                                    tvLoteValidado.setText("ITEMS VALIDADOS\n");
+                                }
+                            });
+                            itemsValidados ="Itmens validados \n";
                             while (rs.next()) {
-                                tvLoteValidado.setText(tvLoteValidado.getText()+" "+rs.getString(1));
+
+                                itemsValidados +="\n"+ rs.getString(1);
                             }
+                            System.out.println(itemsValidados);
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                public void run(){
+                                    tvLoteValidado.setText(itemsValidados);
+                                }
+                            });
                         }else{
 
                             MainActivity.this.runOnUiThread(new Runnable() {
@@ -180,35 +203,43 @@ public class MainActivity extends AppCompatActivity {
                                     dialog.show();
                                     borarEdt();
                                     tvErrorLote.setText(" ");
+                                    tvLote.setText(" ");
                                 }
 
                             });
                         }
                     }else{
 
-                        tvNoRegistro.setText("No existe el registro "+guia);
-                        tvLote.setText("");
-                        cantidadItem = 0;
 
                         MainActivity.this.runOnUiThread(new Runnable() {
 
                             public void run(){
 
+                                tvNoRegistro.setText("No existe el registro "+guia);
+                                tvLote.setText(" ");
+                                cantidadItem = 0;
                                 borarEdt();
+                                tvErrorLote.setText(" ");
+                                tvLoteValidado.setText(" ");
 
                             }
 
                         });
-                        tvErrorLote.setText(" ");
-                        tvLoteValidado.setText(" ");
                     }
-
-
                     conn.close();
                 } catch (SQLException se) {
                     System.out.println(" Error: " + se.toString());
                 }
 
+                MainActivity.this.runOnUiThread(new Runnable() {
+
+                    public void run(){
+                        if(!(alertDialog == null)) {
+                            alertDialog.dismiss();
+                        }
+                    }
+
+                });
             }
 
         };
@@ -223,6 +254,17 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 String numero_serie;
 
+                MainActivity.this.runOnUiThread(new Runnable() {
+
+                    public void run(){
+                        alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                        alertDialogBuilder.setTitle("Validando");
+                        alertDialogBuilder.setMessage("Espere un momento se está validando los números de serie").setCancelable(false);
+                         alertDialog = alertDialogBuilder.create();
+                         alertDialog.show();
+                    }
+
+                });
 
                 for (int i = 0; i<edtList.size(); i++ ) {
                     numero_serie = edtList.get(i).getText().toString().toUpperCase().trim();
@@ -255,19 +297,30 @@ public class MainActivity extends AppCompatActivity {
                                         pst.setInt(2, id_registro);
                                         int rtRegistro = pst.executeUpdate();
                                         if (rtRegistro>0){
-                                            enviarCorreo("http://192.168.0.8/Movon-APP/enviarCorreo.php", guia, id_registro);
+                                            enviarCorreo("http://192.168.0.19/Movon-APP/enviarCorreo.php", guia, id_registro);
                                         }
                                     }
 
                                 }
+
                             } else {
                                 //tvErrorLote.setText("Número de serie incorrecto:");
                                 System.out.println("no se encuentra");
-                                tvErrorLote.setText(tvErrorLote.getText() +"\n"+numero_serie+" es incorrecto");
+
+                                final String finalNumero_serie = numero_serie;
+                                MainActivity.this.runOnUiThread(new Runnable() {
+
+                                    public void run(){
+                                        tvErrorLote.setText(tvErrorLote.getText() +"\n"+ finalNumero_serie +" es incorrecto");
+
+                                    }
+
+                                });
                             }
 
 
                             conn.close();
+
                         } catch (SQLException se) {
                             System.out.println(" Error: " + se.toString());
                         }
@@ -281,6 +334,7 @@ public class MainActivity extends AppCompatActivity {
                         Thread construir = consultarRegistro(guia);
                         construir.start();
                         construir = null;
+
                     }
 
                 });
@@ -313,11 +367,8 @@ public class MainActivity extends AppCompatActivity {
                 return parametros;
             }
         };
-
         requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
-
-
     }
 
     private void edtDinamico(int n){
@@ -325,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
         final EditText[] editTexts = new  EditText[n];
         edtList.clear();
         for (int i = 1; i <= n; i++) {
-            // create a new textview
+
             EditText editText = new EditText(this);
             editText.setId(i);
             editText.setHint("Item "+i);
@@ -340,7 +391,6 @@ public class MainActivity extends AppCompatActivity {
         //Log.d("MyApp", String.valueOf(edtList.size()));
         int tamaño= edtList.size();
         for (int i=0; i<tamaño; i++){
-            //Remove 2nd(index:1) TextView from the parent LinearLayout
             //Log.d("MyApp", "Entra al for"+i);
             layoutItems.removeView(edtList.get(i));
 

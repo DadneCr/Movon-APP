@@ -12,5 +12,13 @@
     <string name="tracking">tracking</string>
     <string name="todo">TODO</string>
     <string name="salir">Salir</string>
+    <string name="el_scrollview_junto_con_un_linearlayout_nos_permite_disponer_una_cantidad_de_componentes_visuales_que_superan_la_cantidad_de_espacio_del_visor_del_celular_o_tablet_luego_el_usuario_puede_desplazar_con_el_dedo_la_interfaz_creada_problema_disponer_un_control_de_tipo_scrollview_que_se_encuentra_en_la_pesta_a_composite_como_veremos_autom_ticamente_se_crea_una_componente_de_tipo_linearlayout_y_fijemos_la_propiedad_orientation_del_linearlayout_con_el_valor_vertical">
+        El ScrollView junto con un LinearLayout nos permite disponer una cantidad de componentes visuales que superan la
+        cantidad de espacio del visor del celular o tablet. Luego el usuario puede desplazar con el dedo la interfaz
+        creada. Problema: Disponer un control de tipo ScrollView (que se encuentra en la pestaña Composite). Como
+        veremos automáticamente se crea una componente de tipo LinearLayout y fijemos la propiedad Orientation del
+        LinearLayout con el valor vertical:
+    </string>
+    <string name="movon">movon</string>
 
 </resources>

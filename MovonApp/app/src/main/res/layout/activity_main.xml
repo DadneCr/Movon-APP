@@ -6,6 +6,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
+    <TextView
+            android:layout_width="311dp"
+            android:layout_height="60dp" android:id="@+id/tvLotes"
+            android:textSize="18sp" app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            app:layout_constraintTop_toBottomOf="@+id/edtGuia" android:layout_marginTop="28dp"/>
     <Button
             android:id="@+id/btnCerrar"
             android:layout_width="176dp"
@@ -17,79 +23,109 @@
             app:layout_constraintBottom_toTopOf="@+id/textView6"
             tools:ignore="UnknownId" android:textColor="#FFFFFF" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="4dp" android:layout_marginStart="4dp"/>
+
+
     <Button
             android:text="@string/consultar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/btnConsultar"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="508dp" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="252dp" android:layout_marginStart="252dp"
-            android:textColorHighlight="@color/colorAccent" android:background="#22F62C" android:textColor="#FFFFFF"/>
+            android:textColorHighlight="@color/colorAccent" android:background="#22F62C" android:textColor="#FFFFFF"
+            app:layout_constraintStart_toEndOf="@+id/edtGuia"
+            android:layout_marginLeft="32dp" android:layout_marginStart="32dp"
+            app:layout_constraintBottom_toTopOf="@+id/tvNoRegistro"/>
     <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:ems="10"
             android:id="@+id/edtGuia"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="512dp" android:hint="@string/guia" android:autofillHints=""/>
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            android:hint="@string/guia" android:autofillHints=""
+            app:layout_constraintTop_toBottomOf="@+id/btnCerrar" android:layout_marginTop="72dp"
+    />
     <TextView
             android:layout_width="221dp"
             android:layout_height="40dp" android:id="@+id/tvTitulo"
-            android:layout_marginBottom="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/edtGuia" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="104dp" android:layout_marginStart="104dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="84dp" android:layout_marginStart="84dp"
             android:text="@string/validaci_n_de_registro"
-            android:textColor="#DF1708" android:textSize="20sp"/>
+            android:textColor="#DF1708" android:textSize="20sp"
+            app:layout_constraintTop_toBottomOf="@+id/btnCerrar" android:layout_marginTop="8dp"/>
+    <ScrollView android:layout_width="133dp" android:layout_height="206dp" tools:ignore="MissingConstraints"
+                android:id="@+id/scrollView3" app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginLeft="20dp" android:layout_marginStart="20dp"
+                app:layout_constraintStart_toEndOf="@+id/scrollView4" android:layout_marginBottom="192dp"
+                app:layout_constraintTop_toBottomOf="@+id/btnValidar" app:layout_constraintVertical_bias="0.0">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/tvLoteValidado"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="28dp"
+                tools:ignore="MissingConstraints"
+                android:layout_marginLeft="12dp" android:layout_marginStart="12dp"
+                app:layout_constraintStart_toEndOf="@+id/tvErrorLote"
+        />
+    </ScrollView>
     <TextView
             android:layout_width="309dp"
             android:layout_height="38dp" android:id="@+id/tvNoRegistro"
             android:textColor="#F44336"
-            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="468dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="4dp"
-            android:layout_marginStart="4dp" android:textSize="18sp"/>
-    <TextView
-            android:layout_width="281dp"
-            android:layout_height="48dp" android:id="@+id/tvLotes"
-            android:textSize="18sp" app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="47dp"
-            android:layout_marginStart="47dp" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="420dp"/>
-    <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="103dp"
-            android:layout_height="385dp"
-            android:id="@+id/layoutItems" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="24dp" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="12dp" android:layout_marginStart="12dp">
-    </LinearLayout>
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp" android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/tvLotes" android:layout_marginBottom="64dp"
+            app:layout_constraintTop_toBottomOf="@+id/edtGuia" app:layout_constraintVertical_bias="0.0"/>
+
     <Button
             android:text="@string/escanear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/btnEscanear"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="352dp" android:layout_marginLeft="148dp" android:layout_marginStart="148dp"
-            app:layout_constraintStart_toEndOf="@+id/layoutItems" android:background="#22F62C"
-            android:textColor="#FFFFFF"/>
+            android:background="#22F62C"
+            android:textColor="#FFFFFF" tools:ignore="MissingConstraints"
+            android:layout_marginLeft="36dp" android:layout_marginStart="36dp"
+            app:layout_constraintStart_toEndOf="@+id/scrollView4"
+            app:layout_constraintTop_toBottomOf="@+id/tvLotes" android:layout_marginTop="16dp"/>
     <Button
             android:text="@string/validar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/btnValidar"
-            android:layout_marginLeft="148dp" android:layout_marginStart="148dp"
-            app:layout_constraintStart_toEndOf="@+id/layoutItems" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="280dp" android:background="#22F62C" android:textColor="#FFFFFF"/>
-    <TextView
-            android:layout_width="159dp"
-            android:layout_height="189dp" android:id="@+id/tvLoteValidado"
+            android:background="#22F62C" android:textColor="#FFFFFF"
+            tools:ignore="MissingConstraints"
+            android:layout_marginLeft="36dp" android:layout_marginStart="36dp"
+            app:layout_constraintStart_toEndOf="@+id/scrollView4"
+            app:layout_constraintTop_toBottomOf="@+id/btnEscanear" android:layout_marginTop="8dp"/>
+    <ScrollView android:layout_width="112dp" android:layout_height="317dp" tools:ignore="MissingConstraints"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="4dp" android:layout_marginLeft="4dp" android:layout_marginStart="4dp"
+                app:layout_constraintStart_toEndOf="@+id/scrollView2" android:id="@+id/scrollView4"
+                app:layout_constraintTop_toBottomOf="@+id/tvLotes" app:layout_constraintVertical_bias="0.1">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvErrorLote"
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="4dp"
+                android:layout_marginLeft="4dp" android:layout_marginStart="4dp"
+                app:layout_constraintStart_toEndOf="@+id/scrollView2" android:textColor="#F44336"/>
+    </ScrollView>
+    <ScrollView
+            android:layout_width="87dp"
+            android:layout_height="319dp"
+            tools:ignore="MissingConstraints"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="60dp" android:layout_marginLeft="112dp" android:layout_marginStart="112dp"
-            app:layout_constraintStart_toEndOf="@+id/layoutItems"/>
-    <TextView
-            android:layout_width="106dp"
-            android:layout_height="391dp" android:id="@+id/tvErrorLote"
-            android:textColor="#F60404"
-            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="12dp"
-            android:layout_marginLeft="4dp" android:layout_marginStart="4dp"
-            app:layout_constraintStart_toEndOf="@+id/layoutItems"/>
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="8dp" android:layout_marginStart="8dp" android:id="@+id/scrollView2"
+            app:layout_constraintTop_toBottomOf="@+id/tvLotes" app:layout_constraintVertical_bias="0.049">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" android:id="@+id/layoutItems">
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
